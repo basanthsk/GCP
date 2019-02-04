@@ -11,7 +11,7 @@ from apache_beam.options.pipeline_options import StandardOptions
 options = PipelineOptions()
 google_cloud_options = options.view_as(GoogleCloudOptions)
 google_cloud_options.project = 'iucc-assaf-anderson'
-google_cloud_options.job_name = 'bqetl2'
+google_cloud_options.job_name = 'bqetl3'
 google_cloud_options.staging_location = 'gs://dataflow-iucc-assaf-anderson/staging'
 google_cloud_options.temp_location = 'gs://dataflow-iucc-assaf-anderson/temp'
 options.view_as(StandardOptions).runner = 'DataflowRunner'
