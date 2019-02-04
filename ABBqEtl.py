@@ -67,5 +67,5 @@ if __name__ == '__main__':
                      )
 
         data | beam.io.WriteToText('extracted_data.json')
-        log | 'exception' >> beam.io.WriteToText('log file.txt')
+        # log | 'exception' >> beam.io.WriteToText('log file.txt')
         pipeline.run()
