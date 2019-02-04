@@ -66,6 +66,6 @@ if __name__ == '__main__':
                      | 'Print Results' >> beam.ParDo(DimTrans()).with_outputs('exception', main='data')
                      )
 
-        data | beam.io.WriteToText('extracted_data.json')
+        data | beam.io.WriteToText('gs://dataflow-iucc-assaf-anderson/extracted_data.json')
         # log | 'exception' >> beam.io.WriteToText('log file.txt')
         pipeline.run()
