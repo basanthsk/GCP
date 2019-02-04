@@ -51,7 +51,7 @@ class DimTrans(beam.DoFn):
                          'axisOrder': int(idx),
                          'axisValue': float(axis),
                          'axisTitle': u'{}'.format(label)}
-                    yield json.dumps(d)
+                    yield d
 
         except Exception as e:
             beam.pvalue.TaggedOutput('exception', element['physical_measurement'])
@@ -66,6 +66,6 @@ if __name__ == '__main__':
                      | 'Print Results' >> beam.ParDo(DimTrans()).with_outputs('exception', main='data')
                      )
 
-        data | beam.io.WriteToText('gs://dataflow-iucc-assaf-anderson/extracted_data.json')
+        data | 'FormatOutput' >> beam.Map(json.dumps)| beam.io.WriteToText('gs://dataflow-iucc-assaf-anderson/extracted_data.json')
         # log | 'exception' >> beam.io.WriteToText('log file.txt')
         pipeline.run()
