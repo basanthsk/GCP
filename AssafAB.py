@@ -7,7 +7,7 @@ from apache_beam.options.pipeline_options import GoogleCloudOptions
 from apache_beam.options.pipeline_options import PipelineOptions
 from apache_beam.options.pipeline_options import StandardOptions
 
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = './credentils.json'
+# os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = './credentils.json'
 options = PipelineOptions()
 google_cloud_options = options.view_as(GoogleCloudOptions)
 google_cloud_options.project = 'iucc-assaf-anderson'
