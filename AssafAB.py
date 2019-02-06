@@ -18,7 +18,7 @@ options.view_as(StandardOptions).runner = 'DataflowRunner'
 
 infile = 'gs://firebase2bigquery/fb_Samples_items.json'
 outfile = 'gs://dataflow-iucc-assaf-anderson/extracted_data'
-
+logfile = 'gs://dataflow-iucc-assaf-anderson/logfile'
 
 class JsonCoder(object):
     """A JSON coder interpreting each line as a JSON string."""
@@ -62,12 +62,12 @@ class DimTrans(beam.DoFn):
 if __name__ == '__main__':
     with beam.Pipeline(options=options) as pipeline:
         data, log = (pipeline
-                     | beam.io.ReadFromText(infilefile, coder=JsonCoder())
+                     | beam.io.ReadFromText(infile, coder=JsonCoder())
                      | beam.Filter(lambda row: all([row['content'] != 'notParse', row['type'] == 'measurement',row['userid']=='assaf']))
                      # | beam.Map(lambda e : (e['content'],e['physical_measurement']))
                      | 'Print Results' >> beam.ParDo(DimTrans()).with_outputs('exception', main='data')
                      )
 
         data | beam.io.WriteToText(outfile)
-        log | 'exception' >> beam.io.WriteToText('log file.txt')
+        log | 'exception' >> beam.io.WriteToText(logfile)
         pipeline.run()
