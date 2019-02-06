@@ -7,17 +7,17 @@ from apache_beam.options.pipeline_options import GoogleCloudOptions
 from apache_beam.options.pipeline_options import PipelineOptions
 from apache_beam.options.pipeline_options import StandardOptions
 
-# os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = './credentils.json'
-# Dflow_option = ['--project = iucc-assaf-anderson', '--job_name = bqetl4', '--temp_location = gs://dataflow-iucc-assaf-anderson/temp','--staging_location = gs://dataflow-iucc-assaf-anderson/staging']
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = './credentils.json'
 options = PipelineOptions()
 google_cloud_options = options.view_as(GoogleCloudOptions)
 google_cloud_options.project = 'iucc-assaf-anderson'
-google_cloud_options.job_name = 'bqetl4'
+google_cloud_options.job_name = 'bqetl2'
 google_cloud_options.staging_location = 'gs://dataflow-iucc-assaf-anderson/staging'
 google_cloud_options.temp_location = 'gs://dataflow-iucc-assaf-anderson/temp'
-options.view_as(StandardOptions).runner = 'Dataflow'
+options.view_as(StandardOptions).runner = 'DataflowRunner'
 
-infile = 'gs://firebase2bigquery/fb_Samples_items.json'
+infile='./test_file.txt'
+# infile = 'gs://firebase2bigquery/fb_Samples_items.json'
 outfile = 'gs://dataflow-iucc-assaf-anderson/extracted_data'
 
 
@@ -69,6 +69,6 @@ if __name__ == '__main__':
                      | 'Print Results' >> beam.ParDo(DimTrans()).with_outputs('exception', main='data')
                      )
 
-        data | beam.io.WriteToText(outfile,coder=JsonCoder())
-        # log | 'exception' >> beam.io.WriteToText('log file.txt')
+        data | beam.io.WriteToText(outfile)
+        log | 'exception' >> beam.io.WriteToText('log file.txt')
         pipeline.run()

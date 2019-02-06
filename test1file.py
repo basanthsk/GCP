@@ -1,5 +1,5 @@
-import json
-import os
+import pandas as pd
+import json,os
 import apache_beam as beam
 # from apache_beam.options.pipeline_options import SetupOptions
 from apache_beam.options.pipeline_options import GoogleCloudOptions
@@ -7,7 +7,12 @@ from apache_beam.options.pipeline_options import GoogleCloudOptions
 from apache_beam.options.pipeline_options import PipelineOptions
 from apache_beam.options.pipeline_options import StandardOptions
 
-# os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = './credentils.json'
+# with open('test1file.txt','r') as fs:
+#     for line in fs:
+#         row=json.loads(line)
+#         if row['content']:
+#             print(pd.read_json(row['content']))
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = './credentils.json'
 # Dflow_option = ['--project = iucc-assaf-anderson', '--job_name = bqetl4', '--temp_location = gs://dataflow-iucc-assaf-anderson/temp','--staging_location = gs://dataflow-iucc-assaf-anderson/staging']
 options = PipelineOptions()
 google_cloud_options = options.view_as(GoogleCloudOptions)
@@ -17,9 +22,10 @@ google_cloud_options.staging_location = 'gs://dataflow-iucc-assaf-anderson/stagi
 google_cloud_options.temp_location = 'gs://dataflow-iucc-assaf-anderson/temp'
 options.view_as(StandardOptions).runner = 'Dataflow'
 
-infile = 'gs://firebase2bigquery/fb_Samples_items.json'
-outfile = 'gs://dataflow-iucc-assaf-anderson/extracted_data'
-
+infile = 'gs://dataflow-iucc-assaf-anderson/test_file.txt'
+# outfile='out1file.txt'
+outfile = 'gs://dataflow-iucc-assaf-anderson/onefile_data'
+logfile = 'gs://dataflow-iucc-assaf-anderson/logfile'
 
 class JsonCoder(object):
     """A JSON coder interpreting each line as a JSON string."""
@@ -62,13 +68,14 @@ class DimTrans(beam.DoFn):
 
 if __name__ == '__main__':
     with beam.Pipeline(options=options) as pipeline:
-        data, log = (pipeline
+        data,log = (pipeline
                      | beam.io.ReadFromText(infile, coder=JsonCoder())
                      | beam.Filter(lambda row: all([row['content'] != 'notParse', row['type'] == 'measurement']))
                      # | beam.Map(lambda e : (e['content'],e['physical_measurement']))
-                     | 'Print Results' >> beam.ParDo(DimTrans()).with_outputs('exception', main='data')
+                     # | 'Print Results' >> beam.ParDo(DimTrans()).with_outputs('exception', main='data')
+                     | 'trans1' >> beam.Map(DimTrans())
                      )
 
-        data | beam.io.WriteToText(outfile,coder=JsonCoder())
-        # log | 'exception' >> beam.io.WriteToText('log file.txt')
+        data | beam.io.WriteToText(outfile)
+        # log | 'exception' >> beam.io.WriteToText(logfile)
         pipeline.run()
